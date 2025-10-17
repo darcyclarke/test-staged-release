@@ -11,5 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-      - run: npm publish --registry=https://npm.release.channel/
+        with:
+          node-version: '22'
       
+      - name: Publish to Staging Registry with OIDC
+        run: |
+          # Get OIDC token from GitHub
+          OIDC_TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm.release.channel" | jq -r '.value')
+          
+          # Configure npm with OIDC token
+          npm config set //npm.release.channel/:_authToken=$OIDC_TOKEN
+          npm config set registry=https://npm.release.channel/
+         
+          # Publish to staging registry
+          npm publish
