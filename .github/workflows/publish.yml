@@ -20,4 +20,4 @@ jobs:
       - name: Publish with OIDC (automatic)
         run: |
           npm config set registry=https://npm.release.channel/
-          npm publish
+          npm publish --loglevel=verbose
